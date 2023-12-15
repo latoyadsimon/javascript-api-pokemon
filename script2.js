@@ -15,6 +15,7 @@ let pokeData = [];
 let pokemonData;
 let allCards;
 let allPokeCards;
+
 //this randomly selects 30 pokemon based off all pokemon currently in the pokeapi
 const selectNumbers = (data) => {
   max = data.count;
@@ -30,10 +31,10 @@ const selectNumbers = (data) => {
       pokeNums.push(poke);
       pokeData.push(data.results[poke]);
       // console.log(data.results[poke]);
-      console.log(
-        "this is the art im looking for: ",
-        data.results[poke].sprites
-      );
+      //   console.log(
+      //     "this is the art im looking for: ",
+      //     data.results[poke].sprites
+      //   );
     }
   }
 
@@ -63,6 +64,7 @@ async function getNumbers() {
   const data = await getData();
   // console.log("this is the data.count: ", data.count)
   selectNumbers(data);
+
   // console.log("this is selectNumberse(data): ", selectNumbers(data))
   // console.log("do we have the pokeNums: ", pokeNums)
   // console.log("do we have the pokeNums[0]: ", pokeNums[0])
@@ -290,7 +292,7 @@ const updateCollections = (elm, direction) => {
 
   console.log("this is the elm: ", elm);
   if (direction === "toFavs") {
-    favoritesGrid.append(elm);
+    favoritesGrid.appendChild(elm);
     parentElm = elm.parentElement;
     console.log("parentElm id switched: ", parentElm.id);
   } else if (direction === "toMain") {
@@ -399,7 +401,7 @@ for (let elm of sortBtn) {
 // for (let elm of trainerBtn) {
 trainerBtn.addEventListener("click", function () {
   let chosenFew = [];
-  //   getCollections();
+  getCollections();
   console.log("using favsCollection:", favsCollection);
   console.log("using pokemonData: ", pokemonData);
   for (let poke of favsCollection) {
