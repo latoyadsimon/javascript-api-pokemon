@@ -85,6 +85,7 @@ async function getNumbers() {
       //we want an image to show up every time
       let imgResult = "";
 
+      //tells me if a pokemon doesn't have an image
       if (
         result.sprites["front_default"] === null &&
         result.sprites["front_shiny"] === null &&
@@ -116,6 +117,8 @@ async function getNumbers() {
         );
       }
 
+      // ------------------------------
+      //setting the images that it does have
       if (result.sprites["front_default"] === null) {
         imgResult = result.sprites["front_shiny"];
       }
@@ -130,13 +133,14 @@ async function getNumbers() {
       if (
         result.sprites["front_shiny"] === null &&
         result.sprites["front_default"] === null &&
-        !result.sprites["other"]["official-artwork"]["front_default"] === null
+        result.sprites["other"]["official-artwork"]["front_default"] === null
       ) {
-        let filler = `./assets/images/crewmate among us big keychains.jpg`;
+        let filler = `./assets/images/crewmate-among-us-big-keychains.jpg`;
         imgResult = filler;
       } else {
         imgResult = result.sprites["front_default"];
       }
+
       return {
         name: result.name,
         // image: result.sprites["front_default"] || result.sprites["front_shiny"] || result.sprites["other"]["official-artwork"]["front_default"],
@@ -156,9 +160,11 @@ async function getNumbers() {
     for (let card of pokeCards) {
       collectionsGrid.append(card);
     }
+
+    // setting up main to favorites switch
     allCards = document.querySelectorAll(".card");
     // console.log("this is allCards: ", allCards)
-    allPokeCards = document.querySelectorAll(".poke-card");
+    // allPokeCards = document.querySelectorAll(".poke-card");
     // console.log("this is allPokeCards: ", allPokeCards)
 
     for (let elm of allCards) {
@@ -178,12 +184,15 @@ async function getNumbers() {
           console.log(direction);
         }
         // updateCollections(elm.id, direction)
+        // getCollections();
         updateCollections(elm, direction);
+        // getCollections();
       });
     }
   });
 }
 getNumbers();
+
 // console.log("this is allCards: ", allCards)
 //this doesn't work out here
 
@@ -191,9 +200,15 @@ const collectionsGrid = document.querySelector("#main");
 const favoritesGrid = document.querySelector("#favs");
 const fetchNewPokemonBtn = document.querySelector("#new-pokemon-btn");
 
+const sortBtn = document.querySelectorAll(".sortBtn");
+const trainerBtn = document.querySelector(".trainer");
+const favSort = document.querySelector(".sortFavs");
+const mainSort = document.querySelector(".sortMain");
+
 const buildPokeCard = (pokemonData) => {
   const $card = document.createElement("div");
   $card.classList.add("card");
+  $card.setAttribute("id", `${pokemonData.name}`);
   $card.innerHTML = `
     <div id="${pokemonData.id}" class="poke-card">
                 <div class="card-body">
@@ -250,20 +265,25 @@ fetchNewPokemonBtn.addEventListener("click", () => {
 
 // ----------
 
-// async function moveItems() {
-//     const data = await getNumbers();
+//**using the DOM manipulation practice exercise as a reference for moving and sorting items */
+let favsCollection = [];
+let mainCollection = [];
 
-//     console.log("the data I waited for: ", data)
-
-//     const allCards = document.querySelectorAll(".card");
-// console.log("this is allCards: ", allCards)
-//     const allPokeCards = document.querySelectorAll(".poke-card");
-// console.log("this is allPokeCards: ", allPokeCards)
-// }
-
-// moveItems()
-
-// sending pokemon to favs and back
+let getCollections = () => {
+  const newArr1 = Array.from(allCards);
+  //   console.log("heres what Im working with: ", newArr1);
+  favsCollection = [];
+  mainCollection = [];
+  for (let item of newArr1) {
+    if (item.parentElement.id === "main") {
+      mainCollection.push(item);
+    } else {
+      favsCollection.push(item);
+    }
+  }
+};
+// getCollections();
+// sending pokemon to favorites and back
 // const updateCollections = (id, direction) => {
 const updateCollections = (elm, direction) => {
   // let elm = document.getElementById(id);
@@ -278,4 +298,118 @@ const updateCollections = (elm, direction) => {
     parentElm = elm.parentElement;
     console.log("parentElm id switched: ", parentElm.id);
   }
+
+  //   const newArr1 = Array.from(allCards);
+  //   //   console.log("heres what Im working with: ", newArr1);
+  //   favsCollection = [];
+  //   mainCollection = [];
+  //   for (let item of newArr1) {
+  //     if (item.parentElement.id === "main") {
+  //       mainCollection.push(item);
+  //     } else {
+  //       favsCollection.push(item);
+  //     }
+  //   }
 };
+
+//sorting the pokemon
+const sortData = (direction, parentId) => {
+  let container = "";
+  let newArr = "";
+
+  //   const newArr1 = Array.from(allCards);
+  //   //   console.log("heres what Im working with: ", newArr1);
+  //   favsCollection = [];
+  //   mainCollection = [];
+  //   for (let item of newArr1) {
+  //     if (item.parentElement.id === "main") {
+  //       mainCollection.push(item);
+  //     } else {
+  //       favsCollection.push(item);
+  //     }
+  //   }
+  console.log("this is favsCollection.length: ", favsCollection.length);
+
+  if (parentId === "sortMain") {
+    container = document.getElementById("main");
+    newArr = mainCollection;
+  } else if (parentId === "sortFavs") {
+    container = document.getElementById("favs");
+    newArr = favsCollection;
+  } else {
+    container = document.getElementById("main");
+    newArr = Array.from(allCards);
+  }
+
+  //   if (favsCollection.length === 0) {
+  //     container = document.getElementById("main");
+  //     newArr = Array.from(allCards);
+  //   } else {
+  //     if (parentId === "sortMain") {
+  //       container = document.getElementById("main");
+  //       newArr = mainCollection;
+  //     } else if (parentId === "sortFavs") {
+  //       container = document.getElementById("favs");
+  //       newArr = favsCollection;
+  //     }
+  //   }
+
+  //   const container = document.getElementById("main");
+  console.log("here is allCards array: ", Array.from(allCards));
+  console.log("here is mainCollection: ", mainCollection);
+  console.log("here is favsCollection: ", favsCollection);
+
+  if (direction === "desc") {
+    const sortCB = (a, b) => {
+      //   console.log("this is what i sorted: ", a, b);
+      //   console.log("this is what i sorted: ", a.id, b.id);
+      if (a.id < b.id) return 1;
+      else if (a.id > b.id) return -1;
+      else return 0;
+    };
+    newArr.sort(sortCB);
+    // console.log("this should be sorted: ", newArr);
+  } else {
+    const sortCB = (a, b) => {
+      //   console.log(a.id, b.id);
+      if (a.id > b.id) return 1;
+      else if (a.id < b.id) return -1;
+      else return 0;
+    };
+    newArr.sort(sortCB);
+    // console.log("this should be sorted: ", newArr);
+  }
+  newArr.forEach((item) => {
+    container.append(item);
+  });
+};
+
+for (let elm of sortBtn) {
+  elm.addEventListener("click", function () {
+    // console.log(elm);
+    // console.log(elm.dataset.sortdir);
+    // console.log("this is the parentElm", elm.parentElement.id);
+    let parentId = elm.parentElement.id;
+    let direction = elm.dataset.sortdir;
+    getCollections();
+    sortData(direction, parentId);
+  });
+}
+
+// for (let elm of trainerBtn) {
+trainerBtn.addEventListener("click", function () {
+  let chosenFew = [];
+  //   getCollections();
+  console.log("using favsCollection:", favsCollection);
+  console.log("using pokemonData: ", pokemonData);
+  for (let poke of favsCollection) {
+    for (let mon of pokemonData) {
+      if (poke.id === mon.name) {
+        chosenFew.push(mon);
+      }
+    }
+  }
+  console.log("this is the chosenFew: ", chosenFew);
+  //   return chosenFew;
+});
+// }

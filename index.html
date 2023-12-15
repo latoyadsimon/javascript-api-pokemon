@@ -12,6 +12,11 @@
     <section>
       <div class="heading">
         <h2>Main Collection</h2>
+        <div id="sortMain" class="sort">
+          <span>Sort Pokemon</span>
+          <button class="sortBtn" type="button" data-sortdir="asc">A-Z</button>
+          <button class="sortBtn" type="button" data-sortdir="desc">Z-A</button>
+        </div>
       </div>
       <!-- item list will start here -->
       <div id="main" class="collection-grid">
@@ -19,7 +24,7 @@
                 <div class="card-body">
                     <div class="img-wrapper">
 
-                        <img src="./assets/images/crewmate among us big keychains.jpg" alt="image of crewmate">
+                        <img src="./assets/images/crewmate-among-us-big-keychains.jpg">
                     </div>
                     <h3>Pokemon Name</h3>
                     <h4>Pokemon type</h4>
@@ -31,9 +36,19 @@
     <section>
       <div class="heading">
         <h2>Favorites Collection</h2>
+        <div id="sortFavs" class="sort">
+          <span>Sort Pokemon</span>
+          <button class="sortBtn" type="button" data-sortdir="asc">A-Z</button>
+          <button class="sortBtn" type="button" data-sortdir="desc">Z-A</button>
+        </div>
       </div>
       <!-- item list will start here -->
       <div id="favs" class="favs-grid"></div>
+
+      <div id="trainerType" class="sort">
+        <span>Have you Chosen Your Team of six?</span>
+        <button class="trainer" type="button">Choose Your Team!</button>
+      </div>
     </section>
     <!-- <script src="./script.js"></script> -->
     <script src="./script2.js"></script>
