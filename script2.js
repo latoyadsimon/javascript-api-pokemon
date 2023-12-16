@@ -482,7 +482,7 @@ const updateCollections = (elm, direction) => {
   //   console.log("next: ", next);
 
   const goToNext = () => {
-    console.log("Next");
+    // console.log("Next");
     current < slides.length - 1 ? goToNum(current + 1) : goToNum(0);
   };
   const goToPrev = () => {
@@ -594,6 +594,7 @@ trainerBtn.addEventListener("click", function () {
 
   if (favsCollection.length < 6) {
     console.log("Choose six pokemon for your team!");
+    trainerGrid.innerHTML = `<h1>Choose six pokemon for your team!</h1>`;
   } else {
     for (let poke of favsCollection) {
       for (let mon of pokemonData) {

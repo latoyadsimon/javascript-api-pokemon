@@ -17,7 +17,7 @@ body {
 .heading {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
 }
 
 /* .container, */
@@ -171,6 +171,7 @@ body {
   display: flex;
   padding-bottom: 1rem;
   justify-content: space-between;
+  font-size: 24px;
 }
 
 .modal-header .fa-times {
@@ -181,6 +182,11 @@ body {
 .modal-header .fa-times:hover {
   transition: scale(1.1);
   cursor: pointer;
+}
+
+.updateTrainerType {
+  padding: 0px 0px 0px;
+  font-size: 20px;
 }
 
 .full-site-modal.is-visible,
@@ -225,6 +231,9 @@ body {
   position: absolute;
   z-index: -1;
   opacity: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
 }
 
 .trainer-carousel .card.active {
@@ -246,6 +255,11 @@ body {
   /* transform: translate(237%, 0%); */
 }
 /* .trainer-carousel .card */
+.trainer-carousel .img-wrapper {
+  margin: auto 11%;
+  width: 200px;
+  max-height: 190px;
+}
 
 .slide-ctrl-container {
   /* margin-top: 50px; */
@@ -293,4 +307,49 @@ body {
 
 [data-animation="zoomInOut"].full-site-modal.is-visible {
   transform: none;
+}
+
+/* adding 1px to 991 and 768 and 450, so it shows what i want at those pixels. Doing those numbers exactly, it only shows what I want at one pixel below, so gotta add the pixel so it shows that way directly on them */
+
+@media (max-width: 992px) {
+  .modal-body {
+    padding: 85px;
+  }
+
+  .updateTrainerType {
+    padding: 52px 0px 0px;
+    font-size: 32px;
+  }
+
+  .page-block {
+    text-align: center;
+  }
+}
+
+@media (max-width: 769px) {
+  .modal-body {
+    padding: 70px;
+  }
+
+  .updateTrainerType {
+    padding: 52px 0px 0px;
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 451px) {
+  .modal-header {
+    font-size: 32px;
+  }
+  .modal-body {
+    padding: 10px;
+  }
+
+  .updateTrainerType {
+    padding: 52px 0px 0px;
+    font-size: 24px;
+  }
+  .trainer-carousel .card {
+    width: 70%;
+  }
 }
