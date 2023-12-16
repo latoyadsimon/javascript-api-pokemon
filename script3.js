@@ -1,5 +1,4 @@
 // import fetch from "node-fetch";
-// something is causing the file not to work, switching to script3
 
 const allPokeUrl = "https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0";
 const pokeUrl = "https://pokeapi.co/api/v2/pokemon/";
