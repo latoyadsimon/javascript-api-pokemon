@@ -1,5 +1,31 @@
 // import fetch from "node-fetch";
 // something is causing the file not to work, switching to script3
+//it was something in html causing file not to work, switching back to script2
+//use script3 for backup
+
+// type colors from ref
+const typeColor = {
+  bug: "#26de81",
+  dark: "#736c75",
+  dragon: "#ffeaa7",
+  electric: "#fed330",
+  fairy: "#FF0069",
+  fighting: "#30336b",
+  fire: "#f0932b",
+  flying: "#81ecec",
+  grass: "#00b894",
+  ground: "#EFB549",
+  ghost: "#a55eea",
+  ice: "#74b9ff",
+  normal: "#95afc0",
+  poison: "#6c5ce7",
+  psychic: "#a29bfe",
+  rock: "#2d3436",
+  steel: "#89A1B0",
+  water: "#0190FF",
+};
+// if i wanna change the colors later, use this ref for colors:
+// https://www.pokemonaaah.net/artsyfartsy/colordex/
 
 const allPokeUrl = "https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0";
 const pokeUrl = "https://pokeapi.co/api/v2/pokemon/";
@@ -145,7 +171,7 @@ async function getNumbers() {
       }
 
       return {
-        name: result.name,
+        name: result.name.toUpperCase(),
         // image: result.sprites["front_default"] || result.sprites["front_shiny"] || result.sprites["other"]["official-artwork"]["front_default"],
         // image: result.sprites["other"]["official-artwork"]["front_default"],
         image: imgResult,
@@ -153,6 +179,9 @@ async function getNumbers() {
         type: result.types.map((type) => type.type.name).join(" - "),
         alt: "image of the pokemon: " + result.name,
         hp: result["stats"][0]["base_stat"],
+        statAttack: result.stats[1].base_stat,
+        statDefense: result.stats[2].base_stat,
+        statSpeed: result.stats[5].base_stat,
       };
     });
 
@@ -211,6 +240,8 @@ getNumbers();
 
 const collectionsGrid = document.querySelector("#main");
 const favoritesGrid = document.querySelector("#favs");
+const trainerGrid = document.querySelector(".type-trainer");
+const updateTrainerType = document.querySelector(".updateTrainerType");
 const fetchNewPokemonBtn = document.querySelector("#new-pokemon-btn");
 
 const sortBtn = document.querySelectorAll(".sortBtn");
@@ -218,30 +249,115 @@ const trainerBtn = document.querySelector(".trainer");
 const favSort = document.querySelector(".sortFavs");
 const mainSort = document.querySelector(".sortMain");
 
+// going to add a themeColor based on pokemon type
+
 const buildPokeCard = (pokemonData) => {
+  let pokeType;
+  let oneType;
+  if (pokemonData.type.includes("-")) {
+    oneType = pokemonData.type.split(" - ");
+    // console.log("this is one type: ", oneType);
+    // console.log("this is one type[0]: ", oneType[0]);
+    pokeType = oneType[0];
+  } else {
+    pokeType = pokemonData.type;
+  }
+
+  console.log("pokeType for ", pokemonData.name, "is: ", pokeType);
+
+  const themeColor = typeColor[pokeType];
+  if (themeColor === undefined) {
+    console.log(
+      "this is the themecolor for",
+      pokemonData.name,
+      ":",
+      themeColor
+    );
+  }
   const $card = document.createElement("div");
   $card.classList.add("card");
+  //   style = "background-color:${themeColor};";
   $card.setAttribute("id", `${pokemonData.name}`);
-  $card.innerHTML = `
-    <div id="${pokemonData.id}" class="poke-card">
-                <div class="card-body">
-                    <div class="img-wrapper">
+  $card.setAttribute("style", `background-color:${themeColor}`);
+  $card.setAttribute(
+    "style",
+    `background: radial-gradient(circle at 50% 0%, ${themeColor} 36%, #ffffff 36%)`
+  );
+  //   $card.innerHTML = `
+  //     <div id="${pokemonData.id}" class="poke-card">
+  //                 <div class="card-body">
+  //                     <div class="img-wrapper">
 
-                        <img src=${pokemonData.image}>
-                    </div>
-                    <h3 class="poke-name">${pokemonData.name}</h3>
-                    <h4 class="types">${pokemonData.type}</h4>
-                    <h5 class="hp">HP: ${pokemonData.hp}</h5>
-                    
+  //                         <img src=${pokemonData.image}>
+  //                     </div>
+  //                     <h3 class="poke-name">${pokemonData.name}</h3>
+  //                     <h4 class="types">${pokemonData.type}</h4>
+  //                     <h5 class="hp">HP: ${pokemonData.hp}</h5>
+
+  //                 </div>
+  //             </div>`;
+
+  $card.innerHTML = `
+    <div id="${pokemonData.id}" class="poke-card" >
+        <div class="card-body" 
+       
+        >
+            <p class="hp">
+                <span>HP</span>
+                ${pokemonData.hp}
+            </p>
+            <div class="img-wrapper">
+                <img src=${pokemonData.image} />
+            </div>
+            <h2 class="poke-name">${pokemonData.name}</h2>
+            <div class="types">
+                <span style="background: ${themeColor}">${pokemonData.type}</span>
+         
+            </div>
+            <div class="stats">
+                <div>
+                    <h3>${pokemonData.statAttack}</h3>
+                    <p>Attack</p>
                 </div>
-            </div>`;
+                <div>
+                    <h3>${pokemonData.statDefense}</h3>
+                    <p>Defense</p>
+                </div>
+                <div>
+                    <h3>${pokemonData.statSpeed}</h3>
+                    <p>Speed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+`;
+  //   appendTypes(pokemonData.type);
+  //   styleCard(themeColor, $card);
+
   return $card;
 };
+
+// let appendTypes = (types) => {
+//   console.log("types in appendTypes: ", types);
+//   //   types.forEach((item) => {
+//   let span = document.createElement("span");
+//   span.textContent = types;
+//   document.querySelector(".types").appendChild(span);
+//   //   });
+// };
+
+// let styleCard = (color) => {
+//   $card.style.background = `radial-gradient(circle at 50% 0%, ${color} 36%, #ffffff 36%)`;
+//   $card.querySelectorAll(".types span").forEach((typeColor) => {
+//     typeColor.style.backgroundColor = color;
+//   });
+// };
 
 //get new pokemon button
 fetchNewPokemonBtn.addEventListener("click", () => {
   collectionsGrid.innerHTML = "";
   favoritesGrid.innerHTML = "";
+  trainerGrid.innerHTML = "";
   max = 0;
   pokeNeeded = 30;
   pokeNums = [];
@@ -307,15 +423,17 @@ const updateCollections = (elm, direction) => {
 
   console.log("this is the elm: ", elm);
   if (direction === "toFavs") {
-    favoritesGrid.appendChild(elm);
+    favoritesGrid.append(elm);
     parentElm = elm.parentElement;
     console.log("parentElm id switched: ", parentElm.id);
   } else if (direction === "toMain") {
-    collectionsGrid.appendChild(elm);
+    collectionsGrid.append(elm);
     parentElm = elm.parentElement;
     console.log("parentElm id switched: ", parentElm.id);
   }
 
+  //this will let the pop have teh same data a favs
+  trainerGrid.innerHTML = favoritesGrid.innerHTML;
   //   const newArr1 = Array.from(allCards);
   //   //   console.log("heres what Im working with: ", newArr1);
   //   favsCollection = [];
@@ -327,6 +445,59 @@ const updateCollections = (elm, direction) => {
   //       favsCollection.push(item);
   //     }
   //   }
+
+  //slides is only visible here:
+  // carousel functions
+  const slides = document.querySelectorAll(".trainer-carousel .card");
+  console.log("this is slides: ", slides);
+
+  const buttons = document.querySelectorAll(".slide-ctrl-container button");
+
+  let current = Math.floor(Math.random() * slides.length);
+  let next = current < slides.length - 1 ? current + 1 : 0;
+  let prev = current > 0 ? current - 1 : slides.length - 1;
+  const update = () => {
+    slides.forEach((slide) => {
+      slide.classList.remove("active", "prev", "next");
+      slides[current].classList.add("active");
+      slides[prev].classList.add("prev");
+      slides[next].classList.add("next");
+    });
+  };
+
+  const goToNum = (number) => {
+    current = number;
+    next = current < slides.length - 1 ? current + 1 : 0;
+    prev = current > 0 ? current - 1 : slides.length - 1;
+    update();
+
+    //   this will show us what it currently is
+    // console.log("prev: ", prev);
+    // console.log("current: ", current);
+    // console.log("next: ", next);
+  };
+  // try pressing the arrow buttons now, it should update
+  //   console.log("prev: ", prev);
+  //   console.log("current: ", current);
+  //   console.log("next: ", next);
+
+  const goToNext = () => {
+    console.log("Next");
+    current < slides.length - 1 ? goToNum(current + 1) : goToNum(0);
+  };
+  const goToPrev = () => {
+    console.log("Prev");
+    current > 0 ? goToNum(current - 1) : goToNum(slides.length - 1);
+  };
+
+  for (let i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener("click", () =>
+      i === 0 ? goToPrev() : goToNext()
+    );
+  }
+
+  // invoke so it starts with the page
+  update();
 };
 
 //sorting the pokemon
@@ -416,6 +587,7 @@ for (let elm of sortBtn) {
 // for (let elm of trainerBtn) {
 trainerBtn.addEventListener("click", function () {
   let chosenFew = [];
+
   getCollections();
   console.log("using favsCollection:", favsCollection);
   console.log("using pokemonData: ", pokemonData);
@@ -522,12 +694,35 @@ function getMostCommonTypes(chosenFew) {
   console.log("this is the maxType: ", maxType);
 
   let finalMessage = "";
-  if (maxType.length > 2) {
-    finalMessage = `You chose a variety of different pokemon! You don't stick to just one type, You are an all-around type of trainer!`;
+  if (maxType.length > 1) {
+    finalMessage = `You chose a variety of different pokemon! <br> You don't stick to just one type, You are an all-around type of trainer!`;
   } else {
-    finalMessage = `You chose a majority of ${maxType} pokemon! That makes you a(n) ${maxType} Pokemon Trainer!!`;
+    finalMessage = `You chose a majority of ${maxType[0].toUpperCase()} type pokemon! <br> That makes you a(n) ${maxType} type Pokemon Trainer!!`;
   }
 
   //   return result;
+  updateTrainerType.innerHTML = finalMessage;
   return finalMessage;
+}
+
+const modalOpen = "[data-open]";
+const modalClose = "[data-close]";
+const isVisible = "is-visible";
+
+const openModal = document.querySelectorAll(modalOpen);
+const closeModal = document.querySelectorAll(modalClose);
+
+// full site modal "open buttons"
+for (const elm of openModal) {
+  elm.addEventListener("click", function () {
+    const modalId = this.dataset.open;
+    document.getElementById(modalId).classList.add(isVisible);
+  });
+}
+
+for (const elm of closeModal) {
+  elm.addEventListener("click", function () {
+    this.parentElement.parentElement.parentElement.classList.remove(isVisible);
+    updateTrainerType.innerHTML = "";
+  });
 }

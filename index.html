@@ -4,18 +4,30 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JavaScript Website with API</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <button id="new-pokemon-btn">Fetch New Pokemon!</button>
+    <button id="new-pokemon-btn" class="btn">Look For New Pokemon!</button>
     <!-- main -->
     <section>
       <div class="heading">
         <h2>Main Collection</h2>
+        <h2>You Encountered A Bunch of Random Pokemon!!</h2>
         <div id="sortMain" class="sort">
           <span>Sort Pokemon</span>
-          <button class="sortBtn" type="button" data-sortdir="asc">A-Z</button>
-          <button class="sortBtn" type="button" data-sortdir="desc">Z-A</button>
+          <button class="sortBtn btn" type="button" data-sortdir="asc">
+            A-Z
+          </button>
+          <button class="sortBtn btn" type="button" data-sortdir="desc">
+            Z-A
+          </button>
         </div>
       </div>
       <!-- item list will start here -->
@@ -36,10 +48,15 @@
     <section>
       <div class="heading">
         <h2>Favorites Collection</h2>
+        <h2>Your team of Pokemon!</h2>
         <div id="sortFavs" class="sort">
           <span>Sort Pokemon</span>
-          <button class="sortBtn" type="button" data-sortdir="asc">A-Z</button>
-          <button class="sortBtn" type="button" data-sortdir="desc">Z-A</button>
+          <button class="sortBtn btn" type="button" data-sortdir="asc">
+            A-Z
+          </button>
+          <button class="sortBtn btn" type="button" data-sortdir="desc">
+            Z-A
+          </button>
         </div>
       </div>
       <!-- item list will start here -->
@@ -47,9 +64,40 @@
 
       <div id="trainerType" class="sort">
         <span>Have you Chosen Your Team of six?</span>
-        <button class="trainer" type="button">Choose Your Team!</button>
+        <button class="trainer btn" type="button" data-open="pokemonTeam">
+          Choose Your Team!
+        </button>
       </div>
     </section>
+
+    <!-- pokemon trainer modal -->
+    <div
+      id="pokemonTeam"
+      class="full-site-modal page-block"
+      data-animation="zoomInOut"
+    >
+      <div class="container-fluid">
+        <header class="modal-header">
+          <h3>You're A Pokemon Trainer!</h3>
+          <i class="fas fa-times" data-close></i>
+        </header>
+        <h3 class="updateTrainerType"></h3>
+        <div class="modal-body">
+          <!-- this is where the cards in favs collection should appear -->
+          <div class="trainer-carousel type-trainer"></div>
+        </div>
+        <!-- button container -->
+        <div class="slide-ctrl-container">
+          <button>
+            <i class="fas fa-arrow-left"></i>
+          </button>
+          <button>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- <script src="./script.js"></script> -->
     <script src="./script2.js"></script>
     <!-- <script defer src="./move-items.js"></script> -->
