@@ -1,0 +1,1 @@
+https://github.com/latoyadsimon/javascript-api-pokemon.git
