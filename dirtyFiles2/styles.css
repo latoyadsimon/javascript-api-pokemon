@@ -1,0 +1,342 @@
+/* reference used to help with styling: CSS Code for Pokemon Card Generator
+https://medium.com/@cwrworksite/pokemon-card-generator-using-css-and-javascript-5fdecb282911
+ */
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background-color: #eff3ff;
+  margin: 2% 5%;
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.collection-grid,
+.favs-grid {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 3rem 1rem;
+  justify-content: center;
+}
+
+.card {
+  border: 2px solid rgb(0, 170, 255);
+  padding: 10px 20px;
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  margin: 0rem 1rem 1.85rem;
+}
+
+.poke-card {
+  position: relative;
+  margin: 0rem 1rem 1.85rem;
+  max-width: 255px;
+}
+
+.poke-card:hover {
+  /* it will move up on hover */
+  bottom: 20px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: goldenrod;
+}
+
+.img-wrapper:hover {
+  border: 4px solid goldenrod;
+}
+
+.card-body {
+  width: 255px;
+  height: 315px;
+}
+
+/* #card img in ref */
+.img-wrapper,
+.noImg {
+  display: block;
+  width: 145px;
+  max-height: 200px;
+  position: relative;
+  margin: 5px auto;
+  border: 2px solid black;
+  border-radius: 50px;
+  overflow: hidden;
+}
+.card-body img {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.hp {
+  width: 80px;
+  background-color: #ffffff;
+  text-align: center;
+  padding: 8px 0;
+  border-radius: 30px;
+  margin-left: auto;
+  font-weight: 400;
+}
+
+.poke-name {
+  text-align: center;
+  font-weight: 600;
+}
+
+.types {
+  display: flex;
+  justify-content: space-around;
+  margin: 0px 0 1px 0;
+}
+
+.hp span,
+.types span {
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  font-weight: 600;
+}
+
+.types span {
+  padding: 5px 20px;
+  border-radius: 20px;
+  color: #ffffff;
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.stats p {
+  color: #404060;
+}
+
+.btn {
+  padding: 15px 60px;
+  font-size: 18px;
+  background-color: #101010;
+  color: #ffffff;
+  position: relative;
+  margin: 30px auto;
+  border: none;
+  border-radius: 5px;
+}
+
+.modal,
+.full-site-modal {
+  /* pin everything to the edges */
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  transition: all 0.35s ease-in;
+  /* need to hide this modal until ready */
+  visibility: hidden;
+  opacity: 0;
+  z-index: 1000;
+}
+
+.modal-header {
+  display: flex;
+  padding-bottom: 1rem;
+  justify-content: space-between;
+  font-size: 24px;
+}
+
+.modal-header .fa-times {
+  font-size: 1.5rem;
+  transition: all 0.5s ease-in;
+}
+
+.modal-header .fa-times:hover {
+  transition: scale(1.1);
+  cursor: pointer;
+}
+
+.updateTrainerType {
+  padding: 0px 0px 0px;
+  font-size: 20px;
+}
+
+.full-site-modal.is-visible,
+.modal.is-visible {
+  visibility: visible;
+  opacity: 1;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal-body .img-wrapper {
+  max-width: 200px;
+  margin-right: 0.75rem;
+}
+
+.modal-body .img-wrapper img {
+  width: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+  height: 200px;
+}
+
+.trainer-carousel {
+  display: flex;
+  justify-content: center;
+  height: 460px;
+  margin: 80px 20px;
+  pointer-events: none;
+}
+
+.trainer-carousel .card {
+  max-width: 450px;
+  width: 100%;
+  padding: 2.5rem;
+  border-radius: 24px;
+  box-shadow: 0 22px 34px rgba(22, 28, 45, 0.18);
+  transition: all 0.3s ease-in-out;
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+}
+
+.trainer-carousel .card.active {
+  transform: translate(0, -10%);
+  z-index: 10;
+  opacity: 1;
+}
+.trainer-carousel .card.prev,
+.trainer-carousel .card.next {
+  opacity: 0.85;
+}
+.trainer-carousel .card.prev {
+  transform: translateX(-75%);
+}
+.trainer-carousel .card.next {
+  transform: translateX(75%);
+}
+.trainer-carousel .img-wrapper {
+  margin: auto 11%;
+  width: 200px;
+  max-height: 190px;
+}
+
+.slide-ctrl-container {
+  margin-top: -90px;
+}
+.slide-ctrl-container button {
+  background: none;
+  border: none;
+  outline: none;
+  color: #404060;
+  font-size: 32px;
+  transition: all 0.3s ease-in-out;
+  opacity: 0.75;
+}
+.slide-ctrl-container button:hover {
+  opacity: 1;
+}
+
+.slide-ctrl-container button:nth-child(1) {
+  padding-right: 10px;
+}
+.slide-ctrl-container button:nth-child(2) {
+  padding-left: 10px;
+}
+
+/* .reviews ref */
+.container-fluid {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin: 0.5rem 0;
+  overflow: hidden;
+  justify-content: space-around;
+}
+
+.page-block {
+  background: #ffffff;
+}
+
+/* if the card has no image, i want the filler image, image wrapper's height to change */
+.noImg {
+  max-height: 150px;
+}
+
+/* when the site modal is visible, we need this to scale */
+[data-animation="zoomInOut"].full-site-modal {
+  transform: scale(0.2);
+}
+
+[data-animation="zoomInOut"].full-site-modal.is-visible {
+  transform: none;
+}
+
+/* adding 1px to 991 and 768 and 450, so it shows what i want at those pixels. Doing those numbers exactly, it only shows what I want at one pixel below, so gotta add the pixel so it shows that way directly on them */
+
+@media (max-width: 992px) {
+  .modal-body {
+    padding: 85px;
+  }
+
+  .updateTrainerType {
+    padding: 52px 0px 0px;
+    font-size: 32px;
+  }
+
+  .page-block {
+    text-align: center;
+  }
+}
+
+@media (max-width: 769px) {
+  .modal-body {
+    padding: 70px;
+  }
+
+  .updateTrainerType {
+    /* padding: 52px 0px 0px; */
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 451px) {
+  .modal-header {
+    font-size: 32px;
+  }
+  .modal-body {
+    padding: 10px;
+  }
+
+  .updateTrainerType {
+    /* padding: 52px 0px 0px; */
+    font-size: 22px;
+  }
+  .trainer-carousel .card {
+    width: 70%;
+  }
+}

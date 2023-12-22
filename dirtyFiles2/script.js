@@ -1,3 +1,5 @@
+// import fetch from "node-fetch";
+
 // type colors from ref
 const typeColor = {
   bug: "#26de81",
@@ -40,42 +42,14 @@ let allPokeCards;
 let imageWrapperSet;
 let filler = `./assets/images/crewmate-among-us-big-keychains.jpg`;
 
-const setInitialData = () => {
-  collectionsGrid.innerHTML = "";
-  favoritesGrid.innerHTML = "";
-  trainerGrid.innerHTML = "";
-  max = 0;
-  pokeNeeded = 30;
-  pokeNums = [];
-  pokeData = [];
-  pokemonData;
-  favsCollection = [];
-  mainCollection = [];
-  getNumbers();
-};
-
-// setInitialData();
-
-const pokemonNeeded = (pokeNums) => {
-  if (pokeNums.length > 0 && pokeNums.length < 30) {
-    const pokeNeeded = 30 - pokeNums.length;
-    console.log("30 -", pokeNums.length, "=", pokeNeeded);
-    return pokeNeeded;
-  }
-};
-
-const enoughPoke = (data) => {
-  if (pokeNums.length < 30) {
-    selectNumbers(data);
-  } else {
-    console.log("this is pokeNums: ", pokeNums);
-  }
-};
-
 //this randomly selects 30 pokemon based off all pokemon currently in the pokeapi
 const selectNumbers = (data) => {
   max = data.count;
-  pokeNeeded = pokemonNeeded(pokeNums) ?? 30;
+
+  if (pokeNums.length > 0 && pokeNums.length < 30) {
+    pokeNeeded = 30 - pokeNums.length;
+    console.log("30 -", pokeNums.length, "=", pokeNeeded);
+  }
 
   for (let i = 1; i <= pokeNeeded; i++) {
     let poke = getRandomInt(max);
@@ -84,10 +58,14 @@ const selectNumbers = (data) => {
       pokeData.push(data.results[poke]);
     }
   }
-  console.log("this is pokeData: ", pokeData);
+
   console.log("Now this is pokeNums.length: ", pokeNums.length);
 
-  enoughPoke(data);
+  if (pokeNums.length < 30) {
+    selectNumbers(data);
+  } else {
+    console.log("this is pokeNums: ", pokeNums);
+  }
 };
 
 //logic to make everything work
@@ -96,130 +74,81 @@ const getData = () => {
   return fetch(allPokeUrl).then((res) => res.json());
 };
 
-const getPromisesArr = (pokeData) => {
-  console.log("this is pokeData line 100: ", pokeData);
+//this takes the chosen 30 to get information on from the api
+async function getNumbers() {
+  const data = await getData();
+  selectNumbers(data);
+
   const promises = [];
+
   for (let pokeInfo of pokeData) {
     const url = pokeInfo.url;
     promises.push(fetch(url).then((res) => res.json()));
   }
-  return promises;
-};
-
-const getLogImgs = (result) => {
-  if (
-    result.sprites["front_default"] === null &&
-    result.sprites["front_shiny"] === null &&
-    result.sprites["other"]["official-artwork"]["front_default"] === null
-  ) {
-    console.log(
-      "does default equal null for",
-      result.name,
-      "?: ",
-      result.sprites["front_default"] === null
-    );
-    console.log(
-      "does shiny equal null for",
-      result.name,
-      "?: ",
-      result.sprites["front_shiny"] === null
-    );
-    console.log(
-      "does other equal null for",
-      result.name,
-      "?: ",
-      result.sprites["other"]["official-artwork"]["front_default"] === null
-    );
-    console.log(
-      "this is hp for",
-      result.name,
-      ":",
-      result["stats"][0]["base_stat"]
-    );
-  }
-};
-
-const setLogImgs = (result) => {
-  let imgResult = "";
-  let imageWrapperSet = "";
-  if (result.sprites["front_default"] === null) {
-    imgResult = result.sprites["front_shiny"];
-  }
-
-  if (
-    result.sprites["front_shiny"] === null &&
-    result.sprites["front_default"] === null
-  ) {
-    imgResult = result.sprites["other"]["official-artwork"]["front_default"];
-  }
-  if (
-    result.sprites["front_shiny"] === null &&
-    result.sprites["front_default"] === null &&
-    result.sprites["other"]["official-artwork"]["front_default"] === null
-  ) {
-    imgResult = filler;
-    console.log("this is what imgResult is now: ", imgResult);
-    imageWrapperSet = "noImg";
-    console.log("this is imageWrapperSet: ", imageWrapperSet);
-  } else {
-    imgResult = result.sprites["front_default"];
-  }
-
-  return [imgResult, imageWrapperSet];
-};
-
-const addListenerstoCard = (className) => {
-  // setting up main to favorites switch
-  //   allCards = document.querySelectorAll(".card");
-  allCards = document.querySelectorAll(className);
-
-  for (let elm of allCards) {
-    elm.addEventListener("click", function () {
-      getCollections();
-      let parentElmID = elm.parentElement.id;
-      // console.log("parentElmID: ", parentElmID);
-      // console.log("this is the elm: ", elm);
-      let elmID = elm.id;
-      // console.log("this is the elmID: ", elmID);
-      let direction = "";
-      if (parentElmID === "main") {
-        //only want them to have a team of 6 pokemon
-        if (favsCollection.length < 6) {
-          console.log("this is favsCollection.length: ", favsCollection.length);
-          direction = "toFavs";
-          console.log(direction);
-        } else {
-          console.log("You already have 6 pokemon on your Team!");
-        }
-      } else {
-        direction = "toMain";
-        console.log(direction);
-      }
-
-      updateCollections(elm, direction);
-    });
-  }
-};
-
-//this takes the chosen 30 to get information on from the api
-async function getNumbers(pokeData) {
-  const data = await getData();
-  selectNumbers(data);
-
-  let promises = getPromisesArr(pokeData);
 
   Promise.all(promises).then((results) => {
     pokemonData = results.map((result) => {
       //we want an image to show up every time
-      const imgResultList = setLogImgs(result);
-      let imgResult = imgResultList[0] ?? "";
-      imageWrapperSet = imgResultList[1] ?? "img-wrapper";
+      let imgResult = "";
+      imageWrapperSet = "img-wrapper";
 
       //tells me if a pokemon doesn't have an image
-      getLogImgs(result);
+      if (
+        result.sprites["front_default"] === null &&
+        result.sprites["front_shiny"] === null &&
+        result.sprites["other"]["official-artwork"]["front_default"] === null
+      ) {
+        console.log(
+          "does default equal null for",
+          result.name,
+          "?: ",
+          result.sprites["front_default"] === null
+        );
+        console.log(
+          "does shiny equal null for",
+          result.name,
+          "?: ",
+          result.sprites["front_shiny"] === null
+        );
+        console.log(
+          "does other equal null for",
+          result.name,
+          "?: ",
+          result.sprites["other"]["official-artwork"]["front_default"] === null
+        );
+        console.log(
+          "this is hp for",
+          result.name,
+          ":",
+          result["stats"][0]["base_stat"]
+        );
+      }
 
       // ------------------------------
       //setting the images that it does have
+      if (result.sprites["front_default"] === null) {
+        imgResult = result.sprites["front_shiny"];
+      }
+
+      if (
+        result.sprites["front_shiny"] === null &&
+        result.sprites["front_default"] === null
+      ) {
+        imgResult =
+          result.sprites["other"]["official-artwork"]["front_default"];
+      }
+      if (
+        result.sprites["front_shiny"] === null &&
+        result.sprites["front_default"] === null &&
+        result.sprites["other"]["official-artwork"]["front_default"] === null
+      ) {
+        imgResult = filler;
+        console.log("this is what imgResult is now: ", imgResult);
+        imageWrapperSet = "noImg";
+        console.log("this is imageWrapperSet: ", imageWrapperSet);
+      } else {
+        imgResult = result.sprites["front_default"];
+      }
 
       //will catch any nulls/undefined that gets through
       if (imgResult === undefined || imgResult === null) {
@@ -242,14 +171,47 @@ async function getNumbers(pokeData) {
 
     console.log("this is pokemonData: ", pokemonData);
 
-    const pokeCards = pokemonData.map((poke) => {
-      collectionsGrid.append(buildPokeCard(poke));
-    });
+    const pokeCards = pokemonData.map((poke) => buildPokeCard(poke));
 
-    addListenerstoCard(".card");
+    for (let card of pokeCards) {
+      collectionsGrid.append(card);
+    }
+
+    // setting up main to favorites switch
+    allCards = document.querySelectorAll(".card");
+
+    for (let elm of allCards) {
+      elm.addEventListener("click", function () {
+        getCollections();
+        let parentElmID = elm.parentElement.id;
+        // console.log("parentElmID: ", parentElmID);
+        // console.log("this is the elm: ", elm);
+        let elmID = elm.id;
+        // console.log("this is the elmID: ", elmID);
+        let direction = "";
+        if (parentElmID === "main") {
+          //only want them to have a team of 6 pokemon
+          if (favsCollection.length < 6) {
+            console.log(
+              "this is favsCollection.length: ",
+              favsCollection.length
+            );
+            direction = "toFavs";
+            console.log(direction);
+          } else {
+            console.log("You already have 6 pokemon on your Team!");
+          }
+        } else {
+          direction = "toMain";
+          console.log(direction);
+        }
+
+        updateCollections(elm, direction);
+      });
+    }
   });
 }
-getNumbers(pokeData);
+getNumbers();
 
 const collectionsGrid = document.querySelector("#main");
 const favoritesGrid = document.querySelector("#favs");
@@ -264,7 +226,7 @@ const mainSort = document.querySelector(".sortMain");
 
 // going to add a themeColor for the cards based on pokemon type
 
-const decideType = (pokemonData) => {
+const buildPokeCard = (pokemonData) => {
   let pokeType;
   let oneType;
   if (pokemonData.type.includes("-")) {
@@ -273,10 +235,7 @@ const decideType = (pokemonData) => {
   } else {
     pokeType = pokemonData.type;
   }
-  return [oneType, pokeType];
-};
 
-const logThemeValue = (pokeType, pokemonData) => {
   const themeColor = typeColor[pokeType];
   if (themeColor === undefined) {
     console.log(
@@ -286,12 +245,6 @@ const logThemeValue = (pokeType, pokemonData) => {
       themeColor
     );
   }
-  return themeColor;
-};
-
-const buildPokeCard = (pokemonData) => {
-  const [oneType, pokeType] = decideType(pokemonData);
-  let themeColor = logThemeValue(pokeType, pokemonData);
 
   const $card = document.createElement("div");
   $card.classList.add("card");
@@ -342,7 +295,17 @@ const buildPokeCard = (pokemonData) => {
 
 //get new pokemon button
 fetchNewPokemonBtn.addEventListener("click", () => {
-  setInitialData();
+  collectionsGrid.innerHTML = "";
+  favoritesGrid.innerHTML = "";
+  trainerGrid.innerHTML = "";
+  max = 0;
+  pokeNeeded = 30;
+  pokeNums = [];
+  pokeData = [];
+  pokemonData;
+  favsCollection = [];
+  mainCollection = [];
+  getNumbers();
 });
 
 // ----------
@@ -356,9 +319,11 @@ let getCollections = () => {
   favsCollection = [];
   mainCollection = [];
   for (let item of newArr1) {
-    const container =
-      item.parentElement.id === "main" ? mainCollection : favsCollection;
-    container.push(item);
+    if (item.parentElement.id === "main") {
+      mainCollection.push(item);
+    } else {
+      favsCollection.push(item);
+    }
   }
 };
 
@@ -411,17 +376,11 @@ const updateCollections = (elm, direction) => {
     current > 0 ? goToNum(current - 1) : goToNum(slides.length - 1);
   };
 
-  //   for (let i = 0; i < buttons.length; i++) {
-  //     buttons[i].addEventListener("click", () =>
-  //       i === 0 ? goToPrev() : goToNext()
-  //     );
-  //   }
-
-  buttons.forEach((button, index) => {
-    button.addEventListener("click", () =>
-      index === 0 ? goToPrev() : goToNext()
+  for (let i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener("click", () =>
+      i === 0 ? goToPrev() : goToNext()
     );
-  });
+  }
 
   // invoke so it starts with the page
   update();
@@ -449,28 +408,34 @@ const sortData = (direction, parentId) => {
   console.log("here is mainCollection: ", mainCollection);
   console.log("here is favsCollection: ", favsCollection);
 
-  const sortCB = (a, b) => {
-    if (a.id < b.id) return direction === "desc" ? 1 : -1;
-    else if (a.id > b.id) return direction === "desc" ? -1 : 1;
-    else return 0;
-  };
-  newArr.sort(sortCB).forEach((item) => {
+  if (direction === "desc") {
+    const sortCB = (a, b) => {
+      if (a.id < b.id) return 1;
+      else if (a.id > b.id) return -1;
+      else return 0;
+    };
+    newArr.sort(sortCB);
+  } else {
+    const sortCB = (a, b) => {
+      if (a.id > b.id) return 1;
+      else if (a.id < b.id) return -1;
+      else return 0;
+    };
+    newArr.sort(sortCB);
+  }
+  newArr.forEach((item) => {
     container.append(item);
   });
 };
 
-const setSortListeners = (arr) => {
-  for (let elm of arr) {
-    elm.addEventListener("click", function () {
-      let parentId = elm.parentElement.id;
-      let direction = elm.dataset.sortdir;
-      getCollections();
-      sortData(direction, parentId);
-    });
-  }
-};
-
-setSortListeners(sortBtn);
+for (let elm of sortBtn) {
+  elm.addEventListener("click", function () {
+    let parentId = elm.parentElement.id;
+    let direction = elm.dataset.sortdir;
+    getCollections();
+    sortData(direction, parentId);
+  });
+}
 
 trainerBtn.addEventListener("click", function () {
   let chosenFew = [];
