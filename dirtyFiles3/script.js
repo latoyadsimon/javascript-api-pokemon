@@ -23,6 +23,7 @@ const typeColor = {
 // https://www.pokemonaaah.net/artsyfartsy/colordex/
 
 const allPokeUrl = "https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0";
+// const pokeUrl = "https://pokeapi.co/api/v2/pokemon/";
 
 //random number generator
 const getRandomInt = (max) => {
@@ -53,6 +54,8 @@ const setInitialData = () => {
   getNumbers();
 };
 
+// setInitialData();
+
 const pokemonNeeded = (pokeNums) => {
   if (pokeNums.length > 0 && pokeNums.length < 30) {
     const pokeNeeded = 30 - pokeNums.length;
@@ -81,6 +84,8 @@ const selectNumbers = (data) => {
       pokeData.push(data.results[poke]);
     }
   }
+  console.log("this is pokeData: ", pokeData);
+  console.log("Now this is pokeNums.length: ", pokeNums.length);
 
   enoughPoke(data);
   return pokeData;
@@ -93,6 +98,7 @@ const getData = () => {
 
 const getPromisesArr = (data) => {
   pokeData = data;
+  console.log("this is pokeData line 100: ", pokeData);
   const promises = [];
   for (let pokeInfo of pokeData) {
     const url = pokeInfo.url;
@@ -136,8 +142,9 @@ const getLogImgs = (result) => {
 
 const setLogImgs = (result) => {
   //tells me if a pokemon doesn't have an image
-  //   getLogImgs(result);
+  getLogImgs(result);
 
+  //   let imgResult = "";
   let imageWrapperSet = "img-wrapper";
 
   if (result.sprites["front_default"] === null) {
@@ -168,12 +175,14 @@ const setLogImgs = (result) => {
 
 const addListenerstoCard = (className) => {
   // setting up main to favorites switch
+  //   allCards = document.querySelectorAll(".card");
   allCards = document.querySelectorAll(className);
 
   for (let elm of allCards) {
     elm.addEventListener("click", function () {
       getCollections();
       let parentElmID = elm.parentElement.id;
+      let elmID = elm.id;
       let direction = "";
       if (parentElmID === "main") {
         //only want them to have a team of 6 pokemon
@@ -211,8 +220,14 @@ async function getNumbers(pokeData) {
       //we want an image to show up every time
       //setting the images that it does have
       const imgResultList = setLogImgs(result);
+      //?? Similar to || but only returns the right-hand operand if the left-hand is null or undefined
       let imgResult = imgResultList[0];
       imageWrapperSet = imgResultList[1];
+      //   console.log("this is the imgResultList", imgResultList);
+      //   console.log("this is the imgResult", imgResult);
+      //   console.log("this is the imageWrapperSet", imageWrapperSet);
+
+      // ------------------------------
 
       //will catch any nulls/undefined that gets through
       if (imgResult === undefined || imgResult === null) {
@@ -340,7 +355,7 @@ fetchNewPokemonBtn.addEventListener("click", () => {
 
 // ----------
 
-//**moving and sorting items */
+//**using the DOM manipulation practice exercise as a reference for moving and sorting items */
 let favsCollection = [];
 let mainCollection = [];
 
@@ -409,10 +424,20 @@ const createModalCarousel = (favoritesGrid) => {
 const updateCollections = (elm, direction) => {
   console.log("this is the elm: ", elm);
 
+  //   direction === "toFavs"
+  //     ? favoritesGrid.append(elm)
+  //     : collectionsGrid.append(elm);
+  //   parentElm = elm.parentElement;
+  //   console.log("parentElm id switched: ", parentElm.id);
+
   if (direction === "toFavs") {
     favoritesGrid.append(elm);
+    // parentElm = elm.parentElement;
+    // console.log("parentElm id switched: ", parentElm.id);
   } else if (direction === "toMain") {
     collectionsGrid.append(elm);
+    // parentElm = elm.parentElement;
+    // console.log("parentElm id switched: ", parentElm.id);
   }
   parentElm = elm.parentElement;
   console.log("parentElm id switched: ", parentElm.id);
@@ -425,6 +450,7 @@ const sortData = (direction, parentId) => {
   let container = "";
   let newArr = "";
 
+  //   console.log("this is favsCollection.length: ", favsCollection.length);
   //this pinpoints what collection we want to sort through
 
   if (parentId === "sortMain") {
@@ -438,9 +464,9 @@ const sortData = (direction, parentId) => {
     newArr = Array.from(allCards);
   }
 
-  //   console.log("here is allCards array: ", Array.from(allCards));
-  //   console.log("here is mainCollection: ", mainCollection);
-  //   console.log("here is favsCollection: ", favsCollection);
+  console.log("here is allCards array: ", Array.from(allCards));
+  console.log("here is mainCollection: ", mainCollection);
+  console.log("here is favsCollection: ", favsCollection);
 
   const sortCB = (a, b) => {
     if (a.id < b.id) return direction === "desc" ? 1 : -1;
@@ -469,8 +495,8 @@ trainerBtn.addEventListener("click", function () {
   let chosenFew = [];
 
   getCollections();
-  //   console.log("using favsCollection:", favsCollection);
-  //   console.log("using pokemonData: ", pokemonData);
+  console.log("using favsCollection:", favsCollection);
+  console.log("using pokemonData: ", pokemonData);
 
   if (favsCollection.length < 6) {
     console.log("Choose six pokemon for your team!");
@@ -498,10 +524,10 @@ const getAllTypes = (allTypes, chosenFew) => {
     } else {
       allTypes.push(item.type);
     }
-    // console.log("this is allTypes: ", allTypes);
+    console.log("this is allTypes: ", allTypes);
 
     allTypesFlat = allTypes.flat();
-    // console.log("this is a flat of allTypes: ", allTypesFlat);
+    console.log("this is a flat of allTypes: ", allTypesFlat);
   }
   return allTypesFlat;
 };
@@ -532,8 +558,8 @@ const getMaxType = (result) => {
       max = max;
     }
   }
-  //   console.log("this is the max: ", max);
-  //   console.log("this is the maxType: ", maxType);
+  console.log("this is the max: ", max);
+  console.log("this is the maxType: ", maxType);
   return maxType;
 };
 
