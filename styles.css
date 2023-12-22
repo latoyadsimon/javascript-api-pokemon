@@ -56,7 +56,8 @@ body {
   background-color: goldenrod;
 }
 
-.img-wrapper:hover {
+.img-wrapper:hover,
+.noImg:hover {
   border: 4px solid goldenrod;
 }
 

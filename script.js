@@ -23,7 +23,7 @@ const typeColor = {
 // https://www.pokemonaaah.net/artsyfartsy/colordex/
 
 const allPokeUrl = "https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0";
-const pokeUrl = "https://pokeapi.co/api/v2/pokemon/";
+// const pokeUrl = "https://pokeapi.co/api/v2/pokemon/";
 
 //random number generator
 const getRandomInt = (max) => {
@@ -90,14 +90,13 @@ const selectNumbers = (data) => {
   enoughPoke(data);
 };
 
-//logic to make everything work
 //this fetches data from the pokeapi
 const getData = () => {
   return fetch(allPokeUrl).then((res) => res.json());
 };
 
 const getPromisesArr = (pokeData) => {
-  console.log("this is pokeData line 100: ", pokeData);
+  //   console.log("this is pokeData line 100: ", pokeData);
   const promises = [];
   for (let pokeInfo of pokeData) {
     const url = pokeInfo.url;
@@ -140,8 +139,12 @@ const getLogImgs = (result) => {
 };
 
 const setLogImgs = (result) => {
-  let imgResult = "";
-  let imageWrapperSet = "";
+  //tells me if a pokemon doesn't have an image
+  getLogImgs(result);
+
+  //   let imgResult = "";
+  let imageWrapperSet = "img-wrapper";
+
   if (result.sprites["front_default"] === null) {
     imgResult = result.sprites["front_shiny"];
   }
@@ -177,10 +180,7 @@ const addListenerstoCard = (className) => {
     elm.addEventListener("click", function () {
       getCollections();
       let parentElmID = elm.parentElement.id;
-      // console.log("parentElmID: ", parentElmID);
-      // console.log("this is the elm: ", elm);
       let elmID = elm.id;
-      // console.log("this is the elmID: ", elmID);
       let direction = "";
       if (parentElmID === "main") {
         //only want them to have a team of 6 pokemon
@@ -201,6 +201,11 @@ const addListenerstoCard = (className) => {
   }
 };
 
+const pokeCards = (pokemonData) =>
+  pokemonData.map((poke) => {
+    collectionsGrid.append(buildPokeCard(poke));
+  });
+
 //this takes the chosen 30 to get information on from the api
 async function getNumbers(pokeData) {
   const data = await getData();
@@ -211,15 +216,16 @@ async function getNumbers(pokeData) {
   Promise.all(promises).then((results) => {
     pokemonData = results.map((result) => {
       //we want an image to show up every time
+      //setting the images that it does have
       const imgResultList = setLogImgs(result);
-      let imgResult = imgResultList[0] ?? "";
-      imageWrapperSet = imgResultList[1] ?? "img-wrapper";
-
-      //tells me if a pokemon doesn't have an image
-      getLogImgs(result);
+      //?? Similar to || but only returns the right-hand operand if the left-hand is null or undefined
+      let imgResult = imgResultList[0];
+      imageWrapperSet = imgResultList[1];
+      //   console.log("this is the imgResultList", imgResultList);
+      //   console.log("this is the imgResult", imgResult);
+      //   console.log("this is the imageWrapperSet", imageWrapperSet);
 
       // ------------------------------
-      //setting the images that it does have
 
       //will catch any nulls/undefined that gets through
       if (imgResult === undefined || imgResult === null) {
@@ -237,14 +243,13 @@ async function getNumbers(pokeData) {
         statAttack: result.stats[1].base_stat,
         statDefense: result.stats[2].base_stat,
         statSpeed: result.stats[5].base_stat,
+        imageWrapperSet: imageWrapperSet,
       };
     });
 
-    console.log("this is pokemonData: ", pokemonData);
+    // console.log("this is pokemonData: ", pokemonData);
 
-    const pokeCards = pokemonData.map((poke) => {
-      collectionsGrid.append(buildPokeCard(poke));
-    });
+    pokeCards(pokemonData);
 
     addListenerstoCard(".card");
   });
@@ -311,7 +316,7 @@ const buildPokeCard = (pokemonData) => {
                 <span>HP</span>
                 ${pokemonData.hp}
             </p>
-            <div class=${imageWrapperSet}>
+            <div class=${pokemonData.imageWrapperSet}>
                 <img src=${pokemonData.image} />
             </div>
             <h2 class="poke-name">${pokemonData.name}</h2>
@@ -362,46 +367,25 @@ let getCollections = () => {
   }
 };
 
-// sending pokemon to favorites and back
-const updateCollections = (elm, direction) => {
-  console.log("this is the elm: ", elm);
-  if (direction === "toFavs") {
-    favoritesGrid.append(elm);
-    parentElm = elm.parentElement;
-    console.log("parentElm id switched: ", parentElm.id);
-  } else if (direction === "toMain") {
-    collectionsGrid.append(elm);
-    parentElm = elm.parentElement;
-    console.log("parentElm id switched: ", parentElm.id);
-  }
+const update = (slides, current, prev, next) => {
+  slides.forEach((slide) => {
+    slide.classList.remove("active", "prev", "next");
+    slides[current].classList.add("active");
+    slides[prev].classList.add("prev");
+    slides[next].classList.add("next");
+  });
+};
 
-  //this will let the popup have the same data as favs
-  trainerGrid.innerHTML = favoritesGrid.innerHTML;
-
-  //slides is only visible here:
-  // carousel functions
-  const slides = document.querySelectorAll(".trainer-carousel .card");
-  console.log("this is slides: ", slides);
-
-  const buttons = document.querySelectorAll(".slide-ctrl-container button");
-
+const btnMoves = (slides, buttons) => {
   let current = Math.floor(Math.random() * slides.length);
   let next = current < slides.length - 1 ? current + 1 : 0;
   let prev = current > 0 ? current - 1 : slides.length - 1;
-  const update = () => {
-    slides.forEach((slide) => {
-      slide.classList.remove("active", "prev", "next");
-      slides[current].classList.add("active");
-      slides[prev].classList.add("prev");
-      slides[next].classList.add("next");
-    });
-  };
 
   const goToNum = (number) => {
     current = number;
     next = current < slides.length - 1 ? current + 1 : 0;
     prev = current > 0 ? current - 1 : slides.length - 1;
-    update();
+    update(slides, current, prev, next);
   };
 
   const goToNext = () => {
@@ -411,20 +395,51 @@ const updateCollections = (elm, direction) => {
     current > 0 ? goToNum(current - 1) : goToNum(slides.length - 1);
   };
 
-  //   for (let i = 0; i < buttons.length; i++) {
-  //     buttons[i].addEventListener("click", () =>
-  //       i === 0 ? goToPrev() : goToNext()
-  //     );
-  //   }
-
   buttons.forEach((button, index) => {
     button.addEventListener("click", () =>
       index === 0 ? goToPrev() : goToNext()
     );
   });
-
   // invoke so it starts with the page
-  update();
+  update(slides, current, prev, next);
+};
+
+const createModalCarousel = (favoritesGrid) => {
+  //this will let the popup have the same data as favs
+  trainerGrid.innerHTML = favoritesGrid.innerHTML;
+
+  // carousel functions
+  const slides = document.querySelectorAll(".trainer-carousel .card");
+  console.log("this is slides: ", slides);
+
+  const buttons = document.querySelectorAll(".slide-ctrl-container button");
+
+  btnMoves(slides, buttons);
+};
+
+// sending pokemon to favorites and back
+const updateCollections = (elm, direction) => {
+  console.log("this is the elm: ", elm);
+
+  //   direction === "toFavs"
+  //     ? favoritesGrid.append(elm)
+  //     : collectionsGrid.append(elm);
+  //   parentElm = elm.parentElement;
+  //   console.log("parentElm id switched: ", parentElm.id);
+
+  if (direction === "toFavs") {
+    favoritesGrid.append(elm);
+    // parentElm = elm.parentElement;
+    // console.log("parentElm id switched: ", parentElm.id);
+  } else if (direction === "toMain") {
+    collectionsGrid.append(elm);
+    // parentElm = elm.parentElement;
+    // console.log("parentElm id switched: ", parentElm.id);
+  }
+  parentElm = elm.parentElement;
+  console.log("parentElm id switched: ", parentElm.id);
+
+  createModalCarousel(favoritesGrid);
 };
 
 //sorting the pokemon
@@ -434,6 +449,7 @@ const sortData = (direction, parentId) => {
 
   //   console.log("this is favsCollection.length: ", favsCollection.length);
   //this pinpoints what collection we want to sort through
+
   if (parentId === "sortMain") {
     container = document.getElementById("main");
     newArr = mainCollection;
@@ -496,12 +512,7 @@ trainerBtn.addEventListener("click", function () {
   }
 });
 
-//this looks for the type majority in the favorites collection
-function getMostCommonTypes(chosenFew) {
-  const result = {};
-  let allTypes = [];
-  let allTypesFlat = [];
-
+const getAllTypes = (allTypes, chosenFew) => {
   for (const item of chosenFew) {
     if (item.type.includes("-")) {
       console.log("two types located");
@@ -515,7 +526,11 @@ function getMostCommonTypes(chosenFew) {
     allTypesFlat = allTypes.flat();
     console.log("this is a flat of allTypes: ", allTypesFlat);
   }
+  return allTypesFlat;
+};
 
+const countItems = (arr) => {
+  const result = {};
   for (const item of allTypesFlat) {
     if (result[item] === undefined) {
       result[item] = 1;
@@ -523,8 +538,10 @@ function getMostCommonTypes(chosenFew) {
       result[item] += 1;
     }
   }
+  return result;
+};
 
-  console.log("this is the result of types: ", result);
+const getMaxType = (result) => {
   let max = 0;
   let maxType = [];
   for (const type in result) {
@@ -540,6 +557,19 @@ function getMostCommonTypes(chosenFew) {
   }
   console.log("this is the max: ", max);
   console.log("this is the maxType: ", maxType);
+  return maxType;
+};
+
+//this looks for the type majority in the favorites collection
+function getMostCommonTypes(chosenFew) {
+  let allTypes = [];
+  let allTypesFlat = getAllTypes(allTypes, chosenFew);
+
+  let result = countItems(allTypesFlat);
+
+  console.log("this is the result of types: ", result);
+
+  let maxType = getMaxType(result);
 
   let finalMessage = "";
   if (maxType.length > 1) {
