@@ -88,6 +88,7 @@ const selectNumbers = (data) => {
   console.log("Now this is pokeNums.length: ", pokeNums.length);
 
   enoughPoke(data);
+  return pokeData;
 };
 
 //this fetches data from the pokeapi
@@ -95,8 +96,9 @@ const getData = () => {
   return fetch(allPokeUrl).then((res) => res.json());
 };
 
-const getPromisesArr = (pokeData) => {
-  //   console.log("this is pokeData line 100: ", pokeData);
+const getPromisesArr = (data) => {
+  pokeData = data;
+  console.log("this is pokeData line 100: ", pokeData);
   const promises = [];
   for (let pokeInfo of pokeData) {
     const url = pokeInfo.url;
@@ -209,7 +211,7 @@ const pokeCards = (pokemonData) =>
 //this takes the chosen 30 to get information on from the api
 async function getNumbers(pokeData) {
   const data = await getData();
-  selectNumbers(data);
+  pokeData = selectNumbers(data);
 
   let promises = getPromisesArr(pokeData);
 
@@ -254,6 +256,7 @@ async function getNumbers(pokeData) {
     addListenerstoCard(".card");
   });
 }
+
 getNumbers(pokeData);
 
 const collectionsGrid = document.querySelector("#main");
